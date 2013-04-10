@@ -28,7 +28,9 @@ function Meter(){
 
 	this.dayDuration = new Date(clockWorkingHoursEnd - clockWorkingHoursStart);
 	this.startDate = startDate;
+	this.startAmount = startAmount;
 	this.daysDivider = 24*60*60*1000;
+
 
 	for(var i=0;i<this.arrows.length;i++){
 		$(this.arrows[i]).css("left",i*72);
@@ -47,18 +49,21 @@ function Meter(){
 
 	this.init = function(){
 		var percentOffsetDay = this.getWorkingPercentAtDay(this_.startDate);
-		this_.startOffsetSum =  (startOffsetDays+percentOffsetDay) * dailySum;
+		this_.startOffsetSum =  this_.startAmount - (startOffsetDays+percentOffsetDay) * dailySum;
 		this_.startOffsetDate = new Date( this_.getDateMorning( this_.startDate ) - (startOffsetDays  * this_.daysDivider));
 		this_.animate();
-		this_.calculateSum();
+		this_.calculateSum( new Date() );
+		this_.onWindowResize();
+		$(window).resize(this.onWindowResize);
+		$("#Main").css("opacity",0);
+		$("#Main").css("visibility","visible");
+		$("#Main").animate({opacity:1},1000);
 	};
 
 
-	this.calculateSum = function(){
-		var now = new Date();
- 		var daysPercent = this_.getTimeDistanceToOffset( now );
+	this.calculateSum = function(date){
+ 		var daysPercent = this_.getTimeDistanceToOffset( date );
  		var finalSum = daysPercent * dailySum + this_.startOffsetSum;
-		// console.log("Final sum = " + finalSum);
 		return finalSum;
 	};
 
@@ -67,6 +72,7 @@ function Meter(){
 		morning.setHours(clockWorkingHoursStart.getHours());
 		morning.setMinutes(clockWorkingHoursStart.getMinutes());
 		morning.setSeconds(clockWorkingHoursStart.getSeconds());
+		morning.setMilliseconds(0);
 		return morning;
 	};
 
@@ -79,35 +85,39 @@ function Meter(){
 
 	this.getWorkingPercentAtDay = function(date){
 		var morning = this_.getDateMorning( date );
-		var percentDay = (date - morning) / this_.dayDuration;
+		var percentDay = (date.getTime() - morning.getTime()) / this_.dayDuration;
+		percentDay = Math.max( 0, Math.min(1,percentDay));
 		return percentDay;
+	};
+
+	this.onWindowResize = function(){
+    	var posY = Math.max((window.innerHeight - $("#Main").height())/2.0 , 0);
+	    var posX = Math.max((window.innerWidth - $("#Main").width())/2.0 , 0)
+	    $("#Main").css("left",posX);
+	    $("#Main").css("top",posY);
 	};
 
 	this.animate = function(){
 		requestAnimFrame( this_.animate );
-		var sum = this_.calculateSum();
-		var sumArrows = sum*10.0;
+
+		var now = new Date();
+		var sum = this_.calculateSum(now);
+
+		var sumArrows = sum/10.0;
 		for(var i=0;i<5;i++){
 			var a = $(this_.arrows[4-i]);
-			var angle =  360 * (sumArrows / Math.pow(10,i));
+			var angle =  360 * (sumArrows / Math.pow(2,i));
+			// Reversing direction on every second display
 			if(i%2==1) angle = 360 - angle;
-			// angle = a.getRotateAngle() + (new Date()).getTime() % 360;
-			// if(i==1) console.log("a/ngle : " + angle);
 			a.rotate( angle );
 		}
 
 		var sumDigits = ""+Math.round(sum);
-		while(sumDigits.length < this_.digits.length) sumDigits = "0"+sumDigits;
-
-		// console.log("sum : " + sum + "   : " + this_.digits.length);
+		while(sumDigits.length < this_.digits.length+10) sumDigits = "0"+sumDigits;
 		for(var i=0;i<this_.digits.length;i++){
-			// console.log(this_.digits[i].text());
 			$(this_.digits[this_.digits.length-i-1]).text(sumDigits.charAt(sumDigits.length-i-1));
+			// $(this_.digits[this_.digits.length-i-1]).text(i);
 		}
-
-
-//		this.arrow1.
-//		$(this_.arrow1).attr('transform', 'translate(1 1) rotate(4)');
 	};
 
 }

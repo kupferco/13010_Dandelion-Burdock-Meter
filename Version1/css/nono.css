@@ -6,6 +6,13 @@
 	font-style: normal;
 }
 
+#Main{
+	position: absolute;
+	width:		535px;
+	height:		535px;
+	visibility: hidden;
+}
+
 .Meter{
 	position: absolute;
 }

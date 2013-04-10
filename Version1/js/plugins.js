@@ -31,10 +31,7 @@
               window.oRequestAnimationFrame      || 
               window.msRequestAnimationFrame     || 
               function(/* function */ callback, /* DOMElement */ element){
-                window.setTimeout(callback, 1000 / 60);
+                window.setTimeout(callback, 1000 / 20);
+                // window.setTimeout(callback, 5 );
               };
     })();
-
-jQuery.fn.lerp = function(val1, val2, percent){
-    return (val1-val2)*percent + val2;
-};
