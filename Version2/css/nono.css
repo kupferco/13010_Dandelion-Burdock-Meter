@@ -1,0 +1,44 @@
+
+@font-face {
+    font-family: 'FontLight';
+	src: local('☺'), url('../assets/fonts/digreadout/DIGIRU__.TTF') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+#Main{
+	position: absolute;
+	width:		535px;
+	height:		535px;
+	/*visibility: hidden;*/
+	display: 	none;
+}
+
+.Meter{
+	position: absolute;
+}
+
+.Arrow{
+	position: 		absolute;
+	z-index: 		99;
+}
+
+.Digit{
+	position: 		absolute;
+	z-index: 		99;
+	color:			#fff;
+}
+
+#arrows{
+	position: 		absolute;
+	left:			77px;
+	top: 			125px;
+}
+
+#digits{
+	position: 		absolute;
+	left:			145px;
+	top: 			330px;
+	font-size: 		30px;
+	font-family: 	'FontLight';
+}
